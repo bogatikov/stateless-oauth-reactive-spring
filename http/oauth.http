@@ -1,0 +1,25 @@
+### Get redirection URL
+GET http://localhost:8080/oauth2/authorization/google
+
+> {%
+    debugger
+    client.log(JSON.stringify(response.headers.valueOf("Auth-Identification")))
+
+    client.global.set("Auth-Identification", response.headers.valueOf("Auth-Identification"));
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Headers option exists", function () {
+        client.assert(response.headers.valueOf("Auth-Identification") != null, "Cannot find 'Auth-Identification' header in response");
+    });
+
+    client.test("Response content-type is json", function () {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+
+### Complete authorization after Authentication server redirect
+GET http://localhost:8080/login/oauth2/code/google?state=TB1XSQtW1kOr-Dey3D0j64IvCA_1qdO-RkbODGdB-P4%3D&code=4%2F0AWtgzh76-yF4Unp45YCRoUTz5lMNLL7L7PvRilExduvDwsOHQ9ZERXXKb6F2ZOzpQYbwTA&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+openid&authuser=0&prompt=consent
+Auth-Identification: {{Auth-Identification}}
